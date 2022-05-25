@@ -10,6 +10,7 @@
 from typing import Dict, Union
 from collections import namedtuple
 import unittest
+
 import sympy
 
 
@@ -54,6 +55,7 @@ def newton(
     x_solution: sympy.Matrix = sympy.Matrix(
         [start_value for _ in range(_property.amount_vars)]
     )
+
     while ...:
         values = dict(zip(variables, x_solution))
         jacobi_reversed = jacobi_reversed.subs(values)

@@ -26,7 +26,7 @@ def derivative(epsilon: float):
     return inner
 
 
-class DerivativeTest(unittest.TestCase):
+class TestDerivative(unittest.TestCase):
     """
     Test of derivatives methods.
     """
