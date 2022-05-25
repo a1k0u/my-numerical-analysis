@@ -5,8 +5,10 @@ based on the range of a discrete
 set of known data points.
 """
 
-from typing import List, Union
+from typing import List, Union, Callable
 from functools import reduce
+
+from matplotlib import pyplot as plt
 
 
 class Interpolation:
@@ -47,8 +49,8 @@ class Interpolation:
         if len(y_values) != len(x_values):
             raise ValueError("Lengths of arrays must be equal!")
 
-        self.__y: List = y_values
         self.__x: List = x_values
+        self.__y: List = y_values
 
     def newton(self, point: Union[int, float]) -> float:
         """
@@ -65,14 +67,17 @@ class Interpolation:
                 lambda a, b: a * b, (point - self.__x[n_i] for n_i in range(k + 1))
             )
 
-            sep_differences: float = 0
-            for j in range(k + 1):
-                sep_differences += self.__y[j] / reduce(
+            sep_differences: float = sum(
+                self.__y[j]
+                / reduce(
                     lambda a, b: a * b,
-                    (self.__x[j] - self.__x[l] for l in range(k + 1) if l != j),
+                    (self.__x[j] - self.__x[l] for l in range(k + 2) if l != j),
                 )
+                for j in range(k + 2)
+            )
 
             polynomial += sep_differences * x_values_multiply
+
         return polynomial
 
     def lagrange(self, point: Union[int, float]) -> float:
@@ -84,22 +89,41 @@ class Interpolation:
         :return: f(point)
         """
 
-        def phi_func_calc(value: Union[int, float], index: int) -> float:
+        def phi(index: int) -> float:
             """
             Calculate phi function
             in lagrange polynomial.
 
-            :param index: index of loop in lagrange
-            :param value: argument for phi
             :return: result of phi function
             """
 
             return reduce(
                 lambda a, b: a * b,
-                (value - x_j for x_j, j in enumerate(self.__x) if j != index),
+                (
+                    (point - x_j) / (self.__x[index] - x_j)
+                    for j, x_j in enumerate(self.__x)
+                    if j != index
+                ),
             )
 
-        polynomial: float = 0
-        for y_i, i in enumerate(self.__y):
-            polynomial += y_i * phi_func_calc(point, i) / phi_func_calc(self.__x[i], i)
-        return polynomial
+        return sum(y_i * phi(i) for i, y_i in enumerate(self.__y))
+
+
+def main() -> None:
+    def foo(func: Callable) -> tuple:
+        return range(x_set[0], x_set[-1] + 1), [
+            func(x) for x in range(x_set[0], x_set[-1] + 1)
+        ]
+
+    x_set, y_set = [-10, -4, 1, 5, 7], [0, 2, -1, -2, 8]
+    function: Interpolation = Interpolation(x_set, y_set)
+
+    plt.plot(*foo(function.lagrange), "b*", label="Lagrange")
+    plt.plot(*foo(function.newton), "m", label="Newton")
+    plt.plot(x_set, y_set, "ro", label="Input points")
+    plt.legend()
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()
