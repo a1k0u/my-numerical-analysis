@@ -1,10 +1,10 @@
 """
-    Iterative methods that compute
-    approximate solution of a system of equations:
+Iterative methods that compute
+approximate solution of a system of equations:
 
-    f1(x0, x1, ..., xn) = 0,
-    ...
-    fn(x0, x1, ..., xn) = 0.
+f1(x0, x1, ..., xn) = 0,
+...
+fn(x0, x1, ..., xn) = 0.
 """
 
 from typing import Dict, Union
@@ -36,6 +36,7 @@ def newton(
               of the system of equations. Must be more than zero;
     :return: Dictionary - variable and result of algorithm;
     """
+
     Properties: namedtuple = namedtuple(
         "Properties", ["amount_vars", "amount_func", "accuracy"]
     )
@@ -85,6 +86,7 @@ class NewtonTestCase(unittest.TestCase):
         Test function for newton method by unittest.
         :return: None
         """
+
         function_result: Dict[sympy.Symbol, sympy.Float] = newton(
             sympy.symbols(f"x:{2}"),
             sympy.sympify(["x0**2 + x1**2 - 1", "x0**2 - x1"]),

@@ -30,12 +30,14 @@ class TestDerivative(unittest.TestCase):
     """
     Test of derivatives methods.
     """
+
     def test_derivative(self) -> None:
         """
         Tests of derivative function.
 
         :return: None
         """
+
         @derivative(epsilon=1e-12)
         def func(x_val):
             return cos(x_val)
