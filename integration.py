@@ -112,9 +112,10 @@ def simpson(func: Callable, points: list, length: float) -> Union[float, int]:
 
 def quad_gauss(func: Callable, points: list, length: float) -> Union[float, int]:
     left, right = points[0], points[-1]
+    root_polynomial_legendre = [0.906180, -0.906180, 0.538469, -0.538469, 0]
     values: Dict[str, List] = {
         "c": [0.236927, 0.236927, 0.478629, 0.478629, 0.568889],
-        "x": [x * (right - left) / 2 + (left + right) / 2 for x in points][::-1],
+        "x": [x * (right - left) / 2 + (left + right) / 2 for x in root_polynomial_legendre],
     }
 
     return (
