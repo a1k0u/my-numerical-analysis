@@ -4,16 +4,19 @@ QR decomposition.
 Is a decomposition of a matrix A into
 a product A = QR, where Q is orthogonal
 matrix and R - upper triangular matrix.
+
+https://en.wikipedia.org/wiki/QR_decomposition
 """
 
-from typing import Union, NamedTuple
+from dataclasses import dataclass
+from typing import Union
 import numpy as np
-
 
 Matrix = Union[np.array, np.matrix]
 
 
-class QR(NamedTuple):
+@dataclass
+class QR:
     """
     Named storage for some matrix A = QR
     """
