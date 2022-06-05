@@ -9,7 +9,7 @@ https://en.wikipedia.org/wiki/QR_decomposition
 """
 
 from dataclasses import dataclass
-from typing import Union
+from typing import Union, Tuple
 import numpy as np
 
 Matrix = Union[np.array, np.matrix]
@@ -25,15 +25,24 @@ class QR:
     R: Matrix = None
 
 
-def __reshape(A: Matrix, index: int, size: int) -> Matrix:
+def __reshape(A: Matrix, start_pos: int, size: int) -> Matrix:
     """
     Transforms square H_k matrix
     into square with order=size
+
+    Example: H -> E
+
+    H = [[1, 2],
+         [2, 3]]
+
+    E = [[1, 0, 0],
+         [0, 1, 2],
+         [0, 2, 3]]
     """
     E = np.identity(size)
-    for i in range(index, size):
-        for j in range(index, size):
-            E[i, j] = A[i - index, j - index]
+    for i in range(start_pos, size):
+        for j in range(start_pos, size):
+            E[i, j] = A[i - start_pos, j - start_pos]
     return E
 
 
@@ -69,7 +78,62 @@ def decompose_into_qr(A: Matrix) -> QR:
     return result
 
 
+def __process_matrix(A: Matrix, e: float = 1e-6) -> Tuple[float, ...]:
+    """
+    Returns non-multiplies real numbers,
+    complex conjugate numbers, and real
+    roots of multiplicity 2.
+    """
+    eigenvalues = set()
+    index = 0
+    while index < A.shape[0] - 1:
+        if A[index + 1][index] < e:
+            eigenvalues.add(A[index][index])
+            index += 1
+        else:
+            for j in range(index, index + 2):
+                for k in range(index, index + 2):
+                    if A[j, k] > e:
+                        eigenvalues.add(A[j, k])
+            index += 2
+    else:
+        if index == A.shape[0] - 1:
+            eigenvalues.add(A[index][index])
+
+    return tuple(eigenvalues)
+
+
+def find_eigenvalues(
+    A: Matrix, e: float = 1e-6, iterations: int = 3000
+) -> Tuple[float, ...]:
+    """
+    Finds the eigenvalues of a square matrix A with
+    accuracy "e" and does ~n iterations to
+    find it using QR decomposition.
+
+    After that, __process the matrix to take
+    the necessary values.
+    """
+    height, width = A.shape
+    if height != width:
+        raise Exception("Matrix isn't square!")
+
+    _A, _B = np.copy(A), np.copy(A)
+    difference, index = np.inf, 0
+
+    while difference > e and iterations > index:
+        _B = _A
+        _B_QR = decompose_into_qr(_B)
+        _A = _B_QR.R @ _B_QR.Q
+
+        difference = np.abs(_A - _B).max()
+        index += 1
+
+    return __process_matrix(_A, e)
+
+
 if __name__ == "__main__":
-    my_matrix = np.matrix([[1, 1, 4], [2, 1, 4]])
+    my_matrix = np.matrix([[1, 3], [2, 1]])
     my_matrix_qr = decompose_into_qr(my_matrix)
     print(my_matrix_qr.Q @ my_matrix_qr.R)
+    print(find_eigenvalues(my_matrix))
