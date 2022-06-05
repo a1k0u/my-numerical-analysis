@@ -13,6 +13,7 @@ from typing import Union, Tuple
 import numpy as np
 
 Matrix = Union[np.array, np.matrix]
+Complex = Union[float, complex]
 
 
 @dataclass
@@ -78,7 +79,7 @@ def decompose_into_qr(A: Matrix) -> QR:
     return result
 
 
-def __process_matrix(A: Matrix, e: float = 1e-6) -> Tuple[float, ...]:
+def __process_matrix(A: Matrix, e: float = 1e-6) -> Tuple[Complex, ...]:
     """
     Returns non-multiplies real numbers,
     complex conjugate numbers, and real
@@ -91,10 +92,12 @@ def __process_matrix(A: Matrix, e: float = 1e-6) -> Tuple[float, ...]:
             eigenvalues.add(A[index][index])
             index += 1
         else:
-            for j in range(index, index + 2):
-                for k in range(index, index + 2):
-                    if A[j, k] > e:
-                        eigenvalues.add(A[j, k])
+            i = index
+            a, b = A[i, i], A[i, i + 1]
+            c, d = A[i + 1, i], A[i + 1, i + 1]
+            roots = np.roots([1, -a - d, a * d - b * c])
+            for root in roots:
+                eigenvalues.add(root)
             index += 2
     else:
         if index == A.shape[0] - 1:
@@ -105,7 +108,7 @@ def __process_matrix(A: Matrix, e: float = 1e-6) -> Tuple[float, ...]:
 
 def find_eigenvalues(
     A: Matrix, e: float = 1e-6, iterations: int = 3000
-) -> Tuple[float, ...]:
+) -> Tuple[Complex, ...]:
     """
     Finds the eigenvalues of a square matrix A with
     accuracy "e" and does ~n iterations to
@@ -133,7 +136,15 @@ def find_eigenvalues(
 
 
 if __name__ == "__main__":
-    my_matrix = np.matrix([[1, 3], [2, 1]])
+    my_matrix = np.matrix(
+        [
+            [1, 3, 4, 5, 3],
+            [2, 1, 9, 3, 4],
+            [7, 3, 2, 5, 8],
+            [6, 3, 1, 0, 8],
+            [1, 4, 2, 6, 9],
+        ]
+    )
     my_matrix_qr = decompose_into_qr(my_matrix)
     print(my_matrix_qr.Q @ my_matrix_qr.R)
     print(find_eigenvalues(my_matrix))
