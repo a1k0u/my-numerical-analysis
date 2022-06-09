@@ -9,10 +9,13 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    vector<FUNCTION *> splines;
-    ifstream fileIn("input.txt");
+    if (argc != 2)
+        exit(-1);
 
-    if (!fileIn.is_open()) return -1;
+    vector<FUNCTION *> splines;
+    ifstream fileIn(argv[1]);
+
+    if (!fileIn.is_open()) exit(-1);
 
     while (!fileIn.eof()) {
         int n;
@@ -53,7 +56,7 @@ int main(int argc, char *argv[]) {
                 else {
                     cout << "Distance between " + to_string(i) + " and " +
                             to_string(j) + " splines : "
-                         << calcMinDistance(0, 10, splines[i], splines[j])
+                         << calcMinDistance(a, b, splines[i], splines[j])
                          << endl;
                 }
             }

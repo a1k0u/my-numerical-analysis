@@ -1,3 +1,5 @@
+#!/bin/bash
+
 info="""
   ----------------------------------------------------
 
@@ -26,7 +28,7 @@ fi
 
 path=$(readlink -f "$1")
 
-python3 validator.py "$path"
+python3 src/validator.py "$path"
 if [ $? -eq 255 ]; then
   echo "create-spline: invalid data!"
   exit
@@ -40,6 +42,6 @@ fi
 
 graphics=$(ls | grep -P -o ".*\.spline")
 
-python3 graph.py "$graphics"
+python3 src/graph.py "$graphics"
 
 for graphic in $graphics; do rm "$graphic"; done

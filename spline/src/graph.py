@@ -1,6 +1,4 @@
-"""
-Takes all the spline files and draws them.
-"""
+"""Takes all the spline files and draws them."""
 
 from sys import argv
 from matplotlib import pyplot as plt
@@ -34,7 +32,7 @@ def draw_data(points: list, label: str) -> None:
 
 def main() -> None:
     if len(argv) == 1:
-        exit("[LOG]: Empty graphics!")
+        exit(-1)
     graphics = argv[-1].split("\n")
 
     for graphic in graphics:
