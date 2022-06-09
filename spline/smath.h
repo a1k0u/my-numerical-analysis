@@ -12,4 +12,4 @@ real R_x(real x, FUNCTION* func1, FUNCTION* func2);
 real checkRoots(real a, real b, FUNCTION* func1, FUNCTION* func2);
 real calcMinDistance(real a, real b, FUNCTION* func1, FUNCTION* func2);
 
-#endif //SPLINE_SMATH_H
+#endif  // SPLINE_SMATH_H
