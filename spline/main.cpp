@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "smath.h"
-#include "spline.h"
+#include "src/smath.h"
+#include "src/spline.h"
 
 using namespace std;
 
@@ -42,10 +42,10 @@ int main(int argc, char *argv[]) {
             for (int j = i + 1; j < (int)splines.size(); ++j) {
                 pair<real, real> sSpln_ = takeMinMaxSplineX(splines[j]);
 
-                real a = fSpln_.first >= sSpln_.first ? fSpln_.first + 0.01
-                                                      : sSpln_.first + 0.01;
-                real b = fSpln_.second <= sSpln_.second ? fSpln_.second - 0.01
-                                                        : sSpln_.second - 0.01;
+                real a = fSpln_.first >= sSpln_.first ? fSpln_.first
+                                                      : sSpln_.first;
+                real b = fSpln_.second <= sSpln_.second ? fSpln_.second
+                                                        : sSpln_.second;
 
                 real ROOT = checkRoots(a, b, splines[i], splines[j]);
                 if (ROOT != nothingRoots) {
@@ -56,7 +56,9 @@ int main(int argc, char *argv[]) {
                 else {
                     cout << "Distance between " + to_string(i) + " and " +
                             to_string(j) + " splines : "
-                         << calcMinDistance(a, b, splines[i], splines[j])
+                         << calcMinDistance(fSpln_.first + sSpln_.first - a,
+                                            fSpln_.second + sSpln_.second - b,
+                                            splines[i], splines[j])
                          << endl;
                 }
             }
