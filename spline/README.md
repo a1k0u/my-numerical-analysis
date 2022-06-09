@@ -15,4 +15,4 @@ create-spline input.txt
 
 **Результат** на входных данных `input.txt`.
 
-![](src/1.png)
+![](img/1.png)
