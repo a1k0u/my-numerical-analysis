@@ -4,7 +4,8 @@ info="""
   ----------------------------------------------------
 
   Build your splines from file with points
-  and find theirs intersection points.
+  and find their intersection points or the
+  distance between functions.
 
   Pass a file with points, where the number
   of points is indicated first, and then the points in
@@ -12,9 +13,15 @@ info="""
 
   > create-spline input.txt
 
-  Example, where one point with coordinates = (2, 3).
-  1
+  Example, where two functions with 2 and 3 points respectively:
+
+  2
   2 3
+  4 5
+  3
+  1 1
+  2 10
+  3 -5
 
   ----------------------------------------------------
 """
