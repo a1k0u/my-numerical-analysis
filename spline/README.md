@@ -12,3 +12,7 @@ sudo ln -s $(pwd)/create-spline /usr/bin/
 ```shell
 create-spline input.txt
 ```
+
+**Результат** работы на входных данных `input.txt`.
+
+![](src/1.png)
