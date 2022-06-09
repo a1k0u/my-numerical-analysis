@@ -1,3 +1,4 @@
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -9,7 +10,9 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
     vector<FUNCTION *> splines;
-    ifstream fileIn(argv[0]);
+    ifstream fileIn("input.txt");
+
+    if (!fileIn.is_open()) return -1;
 
     while (!fileIn.eof()) {
         int n;
@@ -26,24 +29,33 @@ int main(int argc, char *argv[]) {
     }
     fileIn.close();
 
-    for (int i = 0; i < (int)splines.size() - 1; ++i) {
+    for (int i = 0; i < (int)splines.size(); ++i) {
         pair<real, real> fSpln_ = takeMinMaxSplineX(splines[i]);
         vector<POINT> splineData =
                 buildSplineData(fSpln_.first, fSpln_.second, splines[i]);
-        writeSplineInfoFile("name", splineData);
+        writeSplineInfoFile("func" + to_string(i), splineData);
 
-        for (int j = i + 1; j < (int)splines.size(); ++j) {
-            pair<real, real> sSpln_ = takeMinMaxSplineX(splines[i]);
-            real ROOT = checkRoots(
-                    fSpln_.first >= sSpln_.first ? fSpln_.first : sSpln_.first,
-                    fSpln_.second <= sSpln_.second ? fSpln_.second : sSpln_.second,
-                    splines[i], splines[j]);
-            if (ROOT != nothingRoots) {
-                vector<POINT> point = {{ROOT, splines[i]->getY(ROOT)}};
-                writeSplineInfoFile("name", point);
-            } else {
-                cout << "Nothing roots, min distance: "
-                     << calcMinDistance(0, 10, splines[i], splines[j]);
+        if (i != (int)splines.size() - 1) {
+            for (int j = i + 1; j < (int)splines.size(); ++j) {
+                pair<real, real> sSpln_ = takeMinMaxSplineX(splines[j]);
+
+                real a = fSpln_.first >= sSpln_.first ? fSpln_.first + 0.01
+                                                      : sSpln_.first + 0.01;
+                real b = fSpln_.second <= sSpln_.second ? fSpln_.second - 0.01
+                                                        : sSpln_.second - 0.01;
+
+                real ROOT = checkRoots(a, b, splines[i], splines[j]);
+                if (ROOT != nothingRoots) {
+                    vector<POINT> point = {{ROOT, splines[i]->getY(ROOT)}};
+                    writeSplineInfoFile("point_" + to_string(i) + to_string(j),
+                                        point);
+                }
+                else {
+                    cout << "Distance between " + to_string(i) + " and " +
+                            to_string(j) + " splines : "
+                         << calcMinDistance(0, 10, splines[i], splines[j])
+                         << endl;
+                }
             }
         }
     }

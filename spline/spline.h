@@ -1,10 +1,3 @@
-#ifndef SPLINE_SPLINE_H
-#define SPLINE_SPLINE_H
-
-#include <vector>
-
-#define GARBAGE -2103291932413123
-
 /*
  * Creating an instance of a function
  * at known points using a cubic spline.
@@ -19,6 +12,14 @@
  *
  */
 
+#ifndef SPLINE_SPLINE_H
+#define SPLINE_SPLINE_H
+
+#include <string>
+#include <vector>
+
+#define GARBAGE -2103291932413123
+
 using namespace std;
 
 struct POINT {
@@ -29,8 +30,7 @@ struct CONTAINER {
     long double A, B, C, F;
 };
 
-POINT getSplinePoint(vector<POINT>& staticPoints,
-                     vector<long double>& gammas,
+POINT getSplinePoint(vector<POINT>& staticPoints, vector<long double>& gammas,
                      long double x);
 
 struct FUNCTION {
@@ -43,5 +43,9 @@ struct FUNCTION {
 };
 
 FUNCTION* createFunction(vector<POINT>& staticPoints);
+void writeSplineInfoFile(const string& name, vector<POINT>& points);
+pair<long double, long double> takeMinMaxSplineX(FUNCTION* function);
+vector<POINT> buildSplineData(long double start, long double stop,
+                              FUNCTION* function);
 
 #endif  // SPLINE_SPLINE_H

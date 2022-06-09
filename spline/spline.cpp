@@ -1,6 +1,8 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <algorithm>
 #include "spline.h"
 
 using namespace std;
@@ -63,13 +65,13 @@ long double getGamma_(vector<POINT>& staticPoints,
                (container.A * getAlpha_(staticPoints, index) + container.B);
     }
 
-    long double next_gamma;
+    long double nextGamma;
     if (gammas[index + 1] != GARBAGE)
-        next_gamma = gammas[index + 1];
+        nextGamma = gammas[index + 1];
     else
-        next_gamma = getGamma_(staticPoints, gammas, index + 1);
+        nextGamma = getGamma_(staticPoints, gammas, index + 1);
 
-    long double value = getAlpha_(staticPoints, index + 1) * next_gamma +
+    long double value = getAlpha_(staticPoints, index + 1) * nextGamma +
                         getBeta_(staticPoints, index + 1);
 
     gammas[index] = value;
@@ -100,8 +102,8 @@ POINT getSplinePoint(vector<POINT>& staticPoints,
     long double A, B, C, D, X_i_1, X_i, H;
 
     X_i_1 = staticPoints[index + 1].x;
-    X_i = staticPoints[index].x;
-    H = getH_(staticPoints, index + 1);
+    X_i   = staticPoints[index].x;
+    H     = getH_(staticPoints, index + 1);
 
     A = (X_i_1 - x) / H;
     B = (x - X_i) / H;
@@ -111,9 +113,9 @@ POINT getSplinePoint(vector<POINT>& staticPoints,
     long double Y_i_1, Y_i, G_i_1, G_i;
 
     Y_i_1 = staticPoints[index + 1].y;
-    Y_i = staticPoints[index].y;
+    Y_i   = staticPoints[index].y;
     G_i_1 = gammas[index + 1];
-    G_i = gammas[index];
+    G_i   = gammas[index];
 
     POINT result = {0, 0};
     result.x = x;
@@ -122,8 +124,12 @@ POINT getSplinePoint(vector<POINT>& staticPoints,
     return result;
 }
 
+bool pointCompare_(const POINT& one, const POINT& two) {
+    return one.x < two.x;
+}
+
 FUNCTION* createFunction(vector<POINT>& staticPoints) {
-    FUNCTION* func = new FUNCTION;
+    auto* func = new FUNCTION;
 
     int n = (int)staticPoints.size();
     func->staticPoints.resize(n);
@@ -131,7 +137,34 @@ FUNCTION* createFunction(vector<POINT>& staticPoints) {
 
     for (int i = 0; i < n; ++i)
         func->staticPoints[i] = staticPoints[i];
+    sort(func->staticPoints.begin(), func->staticPoints.end(), &pointCompare_);
     getGammaValues(func->staticPoints, func->gammas);
 
     return func;
+}
+
+pair<long double, long double> takeMinMaxSplineX(FUNCTION* function) {
+    return {function->staticPoints[0].x, function->staticPoints.back().x};
+}
+
+vector<POINT> buildSplineData(long double start, long double stop, FUNCTION* function) {
+    vector<POINT> functionPoints;
+    double step = 0.5;
+    while (start != stop) {
+        functionPoints.push_back(
+                {start, function->getY(start)}
+        );
+        start += step;
+    }
+
+    return functionPoints;
+}
+
+void writeSplineInfoFile(const string& name, vector<POINT>& points) {
+    string fileName = name + ".spline";
+    ofstream fileOut;
+    fileOut.open(fileName);
+    for (POINT point : points)
+        fileOut << point.x << " " << point.y << endl;
+    fileOut.close();
 }

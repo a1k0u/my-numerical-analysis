@@ -20,9 +20,11 @@ def read_file(file: str, points: list) -> None:
 
 def draw_data(points: list, label: str) -> None:
     """Using plt.plot to draw graph"""
+    marker = "o" if len(points) == 1 else "."
+
     plt.plot(
         *zip(*points),
-        marker="o",
+        marker=marker,
         linestyle="dashed",
         linewidth=2,
         markersize=10,
