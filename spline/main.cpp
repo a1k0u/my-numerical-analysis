@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
                 real b = fSpln_.second <= sSpln_.second ? fSpln_.second
                                                         : sSpln_.second;
 
-                real ROOT = checkRoots(a, b, splines[i], splines[j]);
+                real ROOT = checkRoots(a + 0.1, b - 0.1, splines[i], splines[j]);
                 if (ROOT != nothingRoots) {
                     vector<POINT> point = {{ROOT, splines[i]->getY(ROOT)}};
                     writeSplineInfoFile("point_" + to_string(i) + to_string(j),

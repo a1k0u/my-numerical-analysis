@@ -22,24 +22,36 @@ real R_x(real x, FUNCTION* func1, FUNCTION* func2) {
     return func1->getY(x) - func2->getY(x);
 }
 
+real diff_R_x(real x, FUNCTION* func1, FUNCTION* func2) {
+    return (R_x(x + 1e-9, func1, func2) - R_x(x, func1, func2)) / 1e-9;
+}
+
 real checkRoots(real a, real b, FUNCTION* func1, FUNCTION* func2) {
     real step = (b - a) / 1000;
-    while (R_x(a, func1, func2) * R_x(b, func1, func2) > 0 && a < b) a += step;
-    if (abs(a - b) <= 1e-5) return nothingRoots;
-
-    int iter = 0;
-    while (abs(a - b) > 1e-5) {
-        real c = (a + b) / 2;
-        if (R_x(c, func1, func2) * R_x(a, func1, func2) > 0)
-            a = c;
-        else if (R_x(c, func1, func2) * R_x(b, func1, func2) > 0)
-            b = c;
-        else
-            return c;
-        ++iter;
-        if (iter >= 1000000) return nothingRoots;
+    real _a, _b;
+    bool exist = false;
+    for (_a = a; _a < b; _a += step) {
+        _b = _a + step;
+        if (R_x(_a, func1, func2) * R_x(_b, func1, func2) <= 0) {
+            exist = true;
+            break;
+        }
     }
-    return (a + b) / 2;
+
+    if (!exist) return nothingRoots;
+    real x0;
+    if (R_x(_a, func1, func2) * diff_R_x(_a, func1, func2) > 0)
+        x0 = _a;
+    else
+        x0 = _b;
+    real x1 = x0 - R_x(x0, func1, func2) / diff_R_x(x0, func1, func2);
+    while (abs(x0 - x1) >= 1e-9) {
+        x0 = x1;
+        if (diff_R_x(x0, func1, func2) == 0) x0 += step;
+        x1 = x0 - R_x(x0, func1, func2) / diff_R_x(x0, func1, func2);
+    }
+
+    return x1;
 }
 
 real calcMinDistance(real a, real b, FUNCTION* func1, FUNCTION* func2) {
