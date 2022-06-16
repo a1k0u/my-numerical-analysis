@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import NamedTuple
 
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import patches, pyplot
 from celluloid import Camera
@@ -89,20 +90,35 @@ while _time.start < _time.end:
         * _time.step
     )
 
-    print(X_values)
+    print(X_values, _vars.Ay, _vars.Vy)
 
     e1 = patches.Arc(
-        (_vars.length / 2, _vars.Ay / 2),
-        _vars.length,
-        _vars.Ay,
-        theta1=X_values[3],
-        theta2=X_values[4],
+        (X_values[0], X_values[2]),
+        X_values[2] * 2,
+        X_values[2] * 2,
+        angle=0,
+        theta1=(3 * np.pi / 2 - X_values[3]) * (180 / np.pi),
+        theta2=270
     )
 
-    axis.add_patch(e1)
+    e2 = patches.Arc(
+        (X_values[1], X_values[2]),
+        X_values[2] * 2,
+        X_values[2] * 2,
+        angle=-180,
+        theta1=270 - X_values[4] * 180 / np.pi,
+        theta2=270
+    )
+
     _time.start += _time.step
+
+    pyplot.xlim([-1, 1])
+    pyplot.ylim([0, 1])
+
+    axis.add_patch(e1)
+    axis.add_patch(e2)
     camera.snap()
 
-
 animation = camera.animate()
-animation.save("animation.gif", writer="Pillow", fps=10)
+animation.save("animation.gif", fps=10)
+
