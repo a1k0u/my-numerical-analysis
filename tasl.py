@@ -98,22 +98,32 @@ while _time.start < _time.end:
         X_values[2] * 2,
         angle=0,
         theta1=(3 * np.pi / 2 - X_values[3]) * (180 / np.pi),
-        theta2=270
+        theta2=270,
+        linewidth=2
     )
 
     e2 = patches.Arc(
         (X_values[1], X_values[2]),
         X_values[2] * 2,
         X_values[2] * 2,
-        angle=-180,
-        theta1=270 - X_values[4] * 180 / np.pi,
-        theta2=270
+        angle=0,
+        theta1=270,
+        theta2=(3 * np.pi / 2 + X_values[4]) * 180 / np.pi,
+        linewidth=2
     )
 
     _time.start += _time.step
 
-    pyplot.xlim([-1, 1])
-    pyplot.ylim([0, 1])
+    pyplot.text(-0.55, 0.365, "time = %.2f s" % _time.start, size='large')
+    pyplot.text(X_values[0] + 0.025, X_values[2] + 0.025, "x1")
+    pyplot.text(X_values[1] + 0.025, X_values[2] + 0.025, "x2")
+    pyplot.plot(X_values[0], X_values[2], "bo")
+    pyplot.plot(X_values[1], X_values[2], "bo")
+    figure.suptitle("Simulation of the movement of a pneumatic balloon", fontsize=14, fontweight="bold")
+    axis.set_title(f"pressure={_data.pressure} Pa, mass={_data.mass} kg, gravity={_data.gravity} m/s", style="italic")
+
+    pyplot.xlim([-0.6, 0.6])
+    pyplot.ylim([0, 0.4])
 
     axis.add_patch(e1)
     axis.add_patch(e2)
