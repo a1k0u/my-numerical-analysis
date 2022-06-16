@@ -132,7 +132,7 @@ while _time.start < _time.end:
     F = _data.pressure * _vars.length - _data.mass * _data.gravity
     direction = 1 if F > 0 else -1
     pyplot.annotate(
-        "F=%.3f" % F,
+        "F=%.2f H" % (F * direction),
         xy=((_vars.Ax + _vars.Bx) / 2, _vars.Ay + 0.05 * direction),
         xytext=((_vars.Ax + _vars.Bx) / 2 - 0.1, _vars.Ay),
         arrowprops=dict(facecolor="orange", shrink=0.0005, width=3, headwidth=9),
