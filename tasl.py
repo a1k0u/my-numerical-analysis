@@ -50,7 +50,7 @@ def functions(arguments: np.array, consts: Variables) -> np.array:
 
 _data = PhysicProperties(pressure=2000, gravity=9.8, mass=100, tau=0.005, epsilon=0.001)
 
-_time = Time(start=0, end=1, step=0.01)
+_time = Time(start=0, end=2.5, step=0.01)
 
 _vars = Variables(
     length=0,
@@ -99,7 +99,7 @@ while _time.start < _time.end:
         angle=0,
         theta1=(3 * np.pi / 2 - X_values[3]) * (180 / np.pi),
         theta2=270,
-        linewidth=2
+        linewidth=2,
     )
 
     e2 = patches.Arc(
@@ -109,18 +109,34 @@ while _time.start < _time.end:
         angle=0,
         theta1=270,
         theta2=(3 * np.pi / 2 + X_values[4]) * 180 / np.pi,
-        linewidth=2
+        linewidth=2,
     )
 
     _time.start += _time.step
 
-    pyplot.text(-0.55, 0.365, "time = %.2f s" % _time.start, size='large')
+    pyplot.text(-0.55, 0.365, "time = %.2f s" % _time.start, size="large")
     pyplot.text(X_values[0] + 0.025, X_values[2] + 0.025, "x1")
     pyplot.text(X_values[1] + 0.025, X_values[2] + 0.025, "x2")
     pyplot.plot(X_values[0], X_values[2], "bo")
     pyplot.plot(X_values[1], X_values[2], "bo")
-    figure.suptitle("Simulation of the movement of a pneumatic balloon", fontsize=14, fontweight="bold")
-    axis.set_title(f"pressure={_data.pressure} Pa, mass={_data.mass} kg, gravity={_data.gravity} m/s", style="italic")
+    figure.suptitle(
+        "Simulation of the movement of a pneumatic balloon",
+        fontsize=14,
+        fontweight="bold",
+    )
+    axis.set_title(
+        f"pressure={_data.pressure} Pa, mass={_data.mass} kg, gravity={_data.gravity} m/s",
+        style="italic",
+    )
+
+    F = _data.pressure * _vars.length - _data.mass * _data.gravity
+    direction = 1 if F > 0 else -1
+    pyplot.annotate(
+        "F=%.3f" % F,
+        xy=((_vars.Ax + _vars.Bx) / 2, _vars.Ay + 0.05 * direction),
+        xytext=((_vars.Ax + _vars.Bx) / 2 - 0.1, _vars.Ay),
+        arrowprops=dict(facecolor="orange", shrink=0.0005, width=3, headwidth=9),
+    )
 
     pyplot.xlim([-0.6, 0.6])
     pyplot.ylim([0, 0.4])
@@ -131,4 +147,3 @@ while _time.start < _time.end:
 
 animation = camera.animate()
 animation.save("animation.gif", fps=10)
-
