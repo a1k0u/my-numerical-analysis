@@ -1,3 +1,7 @@
+"""
+Simulation of the movement of a pneumatic balloon in a gif-format.
+"""
+
 from dataclasses import dataclass
 from typing import NamedTuple
 
@@ -16,7 +20,7 @@ class PhysicProperties(NamedTuple):
 
 
 @dataclass
-class Time:
+class Timer:
     start: float
     end: float
     step: float
@@ -49,6 +53,7 @@ def functions(arguments: np.array, consts: Variables) -> np.array:
 
 
 def make_patch(x: float, angle1: float, angle2: float) -> patches.Arc:
+    """Creates one part of a balloon."""
     return patches.Arc(
         (x, X_values[2]),
         X_values[2] * 2,
@@ -62,7 +67,7 @@ def make_patch(x: float, angle1: float, angle2: float) -> patches.Arc:
 
 _data = PhysicProperties(pressure=2000, gravity=9.8, mass=100, tau=0.005, epsilon=0.001)
 
-_time = Time(start=0, end=2.65, step=0.01)
+_time = Timer(start=0, end=2.65, step=0.01)
 
 _vars = Variables(
     length=0,
@@ -82,6 +87,8 @@ figure, axis = pyplot.subplots()
 camera = Camera(figure)
 
 while _time.start < _time.end:
+    # Makes all arithmetic
+
     _vars.Ay = _vars.Ay + _vars.Vy * _time.step
     _vars.By = _vars.Ay
 
@@ -98,6 +105,8 @@ while _time.start < _time.end:
     _vars.Vy = _vars.Vy + (1 / _data.mass) * F * _time.step
 
     _time.start += _time.step
+
+    # Output results in a frame
 
     e1 = make_patch(X_values[0], 270 - X_values[3] * 180 / np.pi, 270)
     e2 = make_patch(X_values[1], 270, 270 + X_values[4] * 180 / np.pi)
@@ -127,7 +136,7 @@ while _time.start < _time.end:
         "F",
         xy=(
             (_vars.Ax + _vars.Bx) / 2,
-            _vars.Ay + (abs(F) * 0.000075 + 0.05) * direction,
+            _vars.Ay + abs(F) * 0.000075 * direction + 0.05 * direction,
         ),
         xytext=((_vars.Ax + _vars.Bx) / 2 - 0.01, _vars.Ay),
         arrowprops=dict(facecolor="orange", shrink=0.0005, width=3, headwidth=9),
@@ -137,6 +146,8 @@ while _time.start < _time.end:
     pyplot.ylim([0, 0.4])
 
     camera.snap()
+
+    print(f"[LOG]: {int(_time.start // _time.step)}-th frame was created.")
 
 animation = camera.animate()
 animation.save("animation.gif", fps=10)
