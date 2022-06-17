@@ -147,7 +147,9 @@ while _time.start < _time.end:
 
     camera.snap()
 
-    print(f"[LOG]: {int(_time.start // _time.step)}-th frame was created.")
+    print(
+        f"[LOG]: {int(_time.start // _time.step)}/{int(_time.end // _time.step)} frame was created."
+    )
 
 animation = camera.animate()
 animation.save("animation.gif", fps=10)
